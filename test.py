@@ -37,23 +37,25 @@ def hist_calc(frame):
 def duplicado(hist_atual, hist_anterior, limiar):
     if hist_anterior is None:
         return False
-    calculo = cv2.compareHist(hist_atual, hist_anterior, cv2.HISTCMP_CORREL)
+    calculo = cv2.compareHist(hist_atual, hist_anterior, cv2.HISTCMP_CORREL) # Compara os histogramas, autoexplicativo e o cv2 final apenas define o calculo
     if calculo >= limiar:
         return True
     return False 
 def tirar_print(video_path):
-    cap = cv2.VideoCapture(video_path)
+    vcap = cv2.VideoCapture(video_path) # vcap = video capture
     # Cria a pasta
     os.makedirs("input/context_files", exist_ok=True)
     frame_count = 4316 # Começa depois da abertura (teoricamente)
-    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_count) # altera o frame atual
+    if int(vcap.get(cv2.CAP_PROP_FRAME_COUNT)) <= 4316:
+        frame_count = 0
+    vcap.set(cv2.CAP_PROP_POS_FRAMES, frame_count) # altera o frame atual
     sucessos = 0
-    if cap.isOpened():
+    if vcap.isOpened():
         while True:
             # Skippa o ending:
             if frame_count >= 30920:
                 break
-            success, frame = cap.read() # Se a variável sucesso for true o frame é lido pelo cap
+            success, frame = vcap.read() # Se a variável sucesso for true o frame é lido pelo cap
             if not success: # Caso de errado quebra o loop por segurança
                 break 
             
@@ -75,7 +77,7 @@ def tirar_print(video_path):
             if sucessos >= 20:
                 break
             sucessos += 1 # Assim fica mais facil trabalhar, já que não precisamos de tantas imagens assim
-    cap.release()
+    vcap.release()
 
 def procurar_ep():
     frames = glob.glob('input/context_files/*.jpg')
@@ -88,7 +90,7 @@ def procurar_ep():
             )
         dados = response.json()
         if dados['result'][0]["similarity"] >= 0.8:
-            print(f"✅ Sucesso! Frame aceito")
+            print("Anime encontrado")
             break
         index += 1
         print('Frame analisado')
