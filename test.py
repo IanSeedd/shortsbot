@@ -10,6 +10,8 @@ import os
 import glob
 import cv2
 from groq import Groq
+import requests
+import time
 
 # Variaveis vindas do config.py
 VIDEO_PATH = config.PATHS["video_input"]
@@ -75,8 +77,28 @@ def tirar_print(video_path):
             sucessos += 1 # Assim fica mais facil trabalhar, já que não precisamos de tantas imagens assim
     cap.release()
 
+def procurar_ep():
+    frames = glob.glob('input/context_files/*.jpg')
+    index = 0
+    while True:
+        with open(frames[index], "rb") as f:
+            response = requests.post(
+                "https://api.trace.moe/search",
+                files={"image": f}
+            )
+        dados = response.json()
+        if dados['result'][0]["similarity"] >= 0.8:
+            print(f"✅ Sucesso! Frame aceito")
+            break
+        index += 1
+        print('Frame analisado')
+        time.sleep(5)
+    print(dados['result'][0])
+
+
 
 tirar_print(VIDEO_PATH)
+procurar_ep()
 # cenas = glob.glob('input/context_files/*.txt')
 # identificar(cenas)
 # client = Groq(api_key=config.GROQ_API_KEY)
