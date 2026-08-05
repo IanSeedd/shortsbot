@@ -44,7 +44,7 @@ def tirar_print(video_path):
     # Cria a pasta
     os.makedirs("input/context_files", exist_ok=True)
     frame_count = 4316 # Começa depois da abertura (teoricamente)
-    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_count) 
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_count) # altera o frame atual
     sucessos = 0
     if cap.isOpened():
         while True:
